@@ -2,6 +2,7 @@
   "name": "tidal-gui",
   "version": "0.0.0",
   "license": "MIT",
+  "homepage": "https://tulitheprogrammer.github.io/tidal-gui",
   "scripts": {
     "nx": "nx",
     "start": "nx serve",
@@ -23,7 +24,9 @@
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -b master -d build"
   },
   "private": true,
   "dependencies": {
@@ -65,6 +68,7 @@
     "eslint-plugin-jsx-a11y": "6.4.1",
     "eslint-plugin-react": "7.21.5",
     "eslint-plugin-react-hooks": "4.2.0",
+    "gh-pages": "^3.1.0",
     "jest": "26.2.2",
     "node-sass": "^4.0.0",
     "prettier": "2.1.2",
