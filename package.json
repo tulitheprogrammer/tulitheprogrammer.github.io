@@ -26,7 +26,7 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "predeploy": "NX_BASE_HREF=/tidal-gui/ yarn build -- --prod --baseHref=/tidal-gui",
-    "deploy": "gh-pages -b master -d dist/apps/tidal-app"
+    "deploy": "gh-pages -d dist/apps/tidal-app"
   },
   "private": true,
   "dependencies": {
