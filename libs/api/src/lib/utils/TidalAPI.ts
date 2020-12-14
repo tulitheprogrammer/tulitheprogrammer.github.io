@@ -331,7 +331,7 @@ TidalAPI.prototype.getPlaylistTracks = function (query) {
     type: 'albums',
   };
 
-  return self._baseRequest();
+  return self._baseRequest(args).then(([err, { items }]) => [err, items]);
 };
 /**
  * Get track info.
@@ -339,7 +339,12 @@ TidalAPI.prototype.getPlaylistTracks = function (query) {
  */
 TidalAPI.prototype.getTrackInfo = function (track) {
   let self = this;
-  return self._baseRequest('/tracks/' + (track.id || track), {}, 'trackInfo');
+  const args: IBaseArgs = {
+    url: `/tracks/${track.id || track}`,
+    type: 'trackInfo',
+  };
+
+  return self._baseRequest(args);
 };
 /**
  * Get track stream URL.
@@ -429,7 +434,7 @@ TidalAPI.prototype.getPlaylists = async function (user?) {
  * Get user playlists asynchronous
  * @param {{id: Number}}
  */
-TidalAPI.prototype.getPlaylistsAsync = async function (user) {
+TidalAPI.prototype.getPlaylistsAsync = async function (user?) {
   return await this.getPlaylists(user).then(([err, { items = [] } = {}]) => [
     err,
     items,
@@ -447,6 +452,30 @@ TidalAPI.prototype.getETagAsync = async function getETagAsync(playlistId) {
     url: `/playlists/${encodeURIComponent(playlistId)}`,
   }).then(([err, , { etag }]) => [err, etag]);
 };
+/**
+ * Gets the ETag Header from a given Playlist, required for editing
+ * @param playlistId
+ * @returns {Promise<string>}
+ */
+TidalAPI.prototype.deletePlaylist = async function deletePlaylist(playlistId) {
+  const self = this;
+
+  return await this._baseRequest({
+    url: `/playlists/${encodeURIComponent(playlistId)}`,
+    method: 'DELETE',
+  });
+};
+
+TidalAPI.prototype.renamePlaylist = async function (playlistId, params) {
+  const self = this;
+
+  return await this._baseRequest({
+    url: `/playlists/${encodeURIComponent(playlistId)}`,
+    method: 'POST',
+    setParamsAsFormData: true,
+    params,
+  });
+};
 
 TidalAPI.prototype.addTracksToPlaylistAsync = async function addTracksToPlaylistAsync(
   songIds,
@@ -460,23 +489,45 @@ TidalAPI.prototype.addTracksToPlaylistAsync = async function addTracksToPlaylist
     url: `/playlists/${encodeURIComponent(playlistId)}/items`,
     params: {
       trackIds: songIds.join(','),
-      onDupes: 'FAIL',
+      // onDupes: 'FAIL',
+      onDupes: 'SKIP',
     },
     method: 'POST',
     additionalHeaders: { 'If-None-Match': etag },
     setParamsAsFormData: true,
   });
 };
+
+// TidalAPI.prototype.getPlaylistTracks = async function (playlistId, query) {
+//   const self = this;
+
+//   return self
+//     ._baseRequest({
+//       url: `/playlists/${encodeURIComponent(playlistId)}/items`,
+//       params: {
+//         limit: query?.limit || 999,
+//         filter: query?.filter || 'ALL',
+//         offset: query?.offset || 0,
+//       },
+//       method: 'GET',
+//     })
+//     .then(([err, { items }]) => [err, items]);
+// };
 /**
  * Checks whether a playlist with a given title is already in the users library
  * @param title {string} Title of the playlist
  * @returns {Promise<null|string>} `null` if no playlist was found, otherwise the UUID of the matching Playlist
  */
-TidalAPI.prototype.checkIfPlaylistExists = async function (title) {
-  const myPlaylists = await this.getPlaylistsAsync(this.getMyID());
-  for (let i = 0; i < myPlaylists.length; i++) {
-    if (myPlaylists[i].title === title) {
-      return myPlaylists[i].uuid;
+TidalAPI.prototype.checkIfPlaylistExists = async function (
+  value,
+  key = 'title'
+) {
+  const [err, myPlaylists] = await this.getPlaylistsAsync(this.getMyID());
+  if (!err && myPlaylists) {
+    for (let i = 0; i < myPlaylists.length; i++) {
+      if (myPlaylists[i][key] === value) {
+        return myPlaylists[i].uuid;
+      }
     }
   }
   return null;
