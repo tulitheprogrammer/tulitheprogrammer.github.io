@@ -39,4 +39,4 @@ testem.log
 Thumbs.db
 
 creds.json
-nx.json
+# nx.json - only if there's a sensitive nx-cloud accessToken

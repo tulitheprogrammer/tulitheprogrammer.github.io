@@ -1,8 +1,26 @@
 # TidalGui
 
-This project was generated using [Nx](https://nx.dev).
+## Getting started
 
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+Please add creds.json file to repos root
+
+(or just clone and rename creds.json.example=>creds.json)
+
+Now, update your Tidal credentials accordingly.
+
+`Make sure ths file doensn't get committed by accident to public source-control !!!`
+
+Get started: `yarn start`
+
+<br>
+
+[Tidal API](https://github.com/openTIDAL/docTIDAL)
+
+<br>
+
+### This project was generated using [Nx](https://nx.dev).
+
+<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="200"></p>
 
 🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
 
